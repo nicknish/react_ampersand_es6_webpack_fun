@@ -1,0 +1,260 @@
+# Building Modern Web Apps (Foundations of a Web Application)
+
+## package.json
+
+Instead of making a build with Grunt/Gulp. Spend too much time configuring, when instead you can simply use npm scripts.
+
+See in the `package.json` file.
+
+### npm scripts
+
+```
+"scripts": {
+	"build": "webpack",
+	"deploy": "surge -p public -d labelr.surge.sh",
+	"start": "webpack-dev-server",
+	"yolo": "git add --all && git commit -am \"$(date)\" && npm version minor && git push origin master --tags && npm run build && npm run deploy"
+}
+```
+
+`build`, `deploy`, `start`, `yolo` all act as scripts to be run using:
+
+**`npm run build`**
+
+### webpack
+
+**Webpack** is a module builder to simplify everything. It takes modules with dependencies and emits static assets representing those modules.
+
+Open up `webpack.config.json`:
+
+```
+var getConfig = require('hjs-webpack')
+module.exports = getConfig({
+	in: 'src/app.js',
+  out: 'public',
+  clearBeforeBuild: true
+})
+```
+
+The `in` is the entry point of the app
+The `out` is where you want the build to go.
+The clearBeforeBuild flag says to recreate public directory on build.
+
+This is simply returning a configuration object.
+
+### Put it all together
+
+When you run `npm start` it’s going to get the contents of the `src` directory and the `app.js` is going to run.
+
+## Creating a React Component
+
+We’re creating a React component:
+
+```
+// Node uses CommonJS RequireJS syntax
+var React = require('react');
+
+var Hello = React.createClass({
+  // render is the basic building block in every React module
+  render: function() {
+    // Brackets in JS?! WHAT!? (This is JSX)
+    return <div>Hello, {this.props.name}</div>
+  }
+})
+
+// React.render takes two properties, the class and where
+React.render(<Hello name="henrik"/>, document.body);
+```
+
+## React and the Virtual Dom
+
+This is NOT templating. Beforehand we used to send a templating language like Handlebars to the browser which would parse a bunch of strings and create the DOM, which was making the browser do more work. Instead now, we can send precompiled javascript that will simply build the DOM.
+
+**But why would we do this**?
+
+Everything is a component, so creation and maintenance of these components is highly efficient.
+
+React lets you write your app as if you don’t care about bindings. It constructs a **virtual DOM**, a lightweight version of the actual DOM, which allows you to mutate the target element to be what that virtual DOM represents.
+
+**Virtual DOM vs Shadow DOM** - “React keeps two versions of the virtual DOM (the original and updated versions). They’re passed into a React function that diffs them and a stream of DOM operations are returned.”[^1]
+
+<figure><img src='http://www.funnyant.com/wp-content/uploads/2014/07/reactjs-virtual-dom.png' /></figure>
+
+"Shadow DOM feature of Web Components allows us to encapsulate DOM and CSS as a single element on the page. If you look at the `<video>` tag with Shadow DOM feature enabled, it shows the complex HTML and CSS that builds the element."[^1]
+
+Turns out, JavaScript is pretty fast when you’re not messing with the DOM.
+
+**React is purely a rendering engine, no more, no less.**
+
+## Creating Styles
+
+The way that Webpack works, you require everything you need for a component, including CSS files:
+
+`import styles from './styles/main.styl'`
+
+If we're in development, we get a Socket.io instance that watches the components we're working with out of the box! Not to mention, webpack autoprefixes when you run `npm run build`. Thanks Webpack!
+
+## Handling Routes
+
+We're using Ampersand's Router base class, so we are going to import it and extend it.
+
+```
+import Router from 'ampersand-router'
+
+export default Router.extend({
+  
+  routes: {
+    // name : // corresponding handler fn
+    '': 'public',
+    'repos': 'repos'
+  },
+
+  public () {
+    // Call React component init
+  },
+
+  repos () {
+    // Call React component init
+  }
+
+})
+```
+
+We're then going to connect this with our init fn in `app.js`:
+
+```
+import Router from './router'
+import styles from './styles/main.css'
+
+window.app = {
+  init () {
+    this.router = new Router();
+    this.router.history.start();
+  }
+}
+
+window.app.init()
+```
+
+We can now visit `localhost:3000` and `localhost:3000/repos`.
+
+## Public & Repos Components
+
+We're building some components and wiring it to some routes now.
+
+How do we connect a React component to the `router.js` so we can start displaying stuff?
+
+Let's route the public page to the router. First, import the PublicPage which contains the React component: 
+
+`import PublicPage from './pages/public'` 
+
+Since this React component returns the object, we can call the react component in the public route handler:
+
+```
+public () {
+	// Call React component init
+    React.render(<PublicPage/>, document.body)
+},
+```
+
+**A few gotchas using JSX**: 
+1. You have to close tags
+2. Use `className`
+3. For becomes HTML for
+4. Write unicode characters or unicode number into the code
+5. Wrap multiline JSX with ()
+6. Must prefix custom HTML attributes with `data-`, unless they are custom HTML elements.
+
+**Importing Classes require a CAPITAL in the name**:
+**R**eposPage - 👍
+**l**inkHandler - 🚫
+
+## Audience Questions
+
+**Is this Server-side routing or Client-side routing**? This is all completely in the client.
+
+## Creating a Layout Component
+
+So right now completely building the page, but instead we can have a layout component. Using `{this.props.children}`, we can build wrapper components that insert child content:
+
+```
+return (
+	<div className='container'>
+		{this.props.children}	
+	</div>
+)
+```
+
+Now we can call this container object in the `router.js` file:
+`import Layout from './layout'`
+```
+renderPage (page, opts = {layout: true}) {
+	if (opts.layout) {
+	  page = (
+			<Layout>
+			  {page}
+			</Layout>
+	  )
+	}
+	React.render(page, document.body);
+},
+public () {
+	this.renderPage(<PublicPage/>, {layout: false})
+},
+```
+
+### Creating conditionals in layouts
+
+In other templating languages you'd be able to do an if-statement right in the return element. In React, this has to happen outside of the return.
+```
+if (condition) {
+	elem = <h1>Some El</h1>
+}
+return (
+	// If this is undefinedpack this renders nothing
+	{ elem }
+)
+```
+
+## Handling Local Links
+
+So far this isn't much of a single-page webapp! We want to create legit links without a lot of weirdness (or hijacking browser behavior), with a standard anchor. 
+
+We're going to use **localLinks** so we don't have to reinvent the wheel.
+
+`import NavHelper from ./components/nav-helper`
+
+```
+/* nav-helper.js */
+import React from 'react'
+import localLinks from 'local-links'
+
+export default React.createClass({
+  displayName: 'NavHelper',
+
+  onClick (event) {
+    console.log('clicked')
+    const pathname = localLinks.getLocalPathname(event)
+
+    // Any click is going to bubble up to this
+    // This handler will determine if it's a local pathname
+    // If so, then it will prevent the native navigation to occur
+    if (pathname) {
+      event.preventDefault()
+      app.router.history.navigate(pathname);
+    }
+  },
+  
+  render () {
+    return (
+      <div {...this.props} onClick={this.onClick}>
+        {this.props.children}
+      </div>
+    )
+  }
+})D
+```
+
+`{…this.props}` - Will allow any attribute to be added without being first defined
+
+[^1]: http://www.funnyant.com/reactjs-what-is-it/
