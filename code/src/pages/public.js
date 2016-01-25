@@ -2,6 +2,7 @@ import React from 'react'
 import NavHelper from '../components/nav-helper'
 
 export default React.createClass({
+
   render () {
     return (
       <NavHelper className='container'>
@@ -10,7 +11,7 @@ export default React.createClass({
         </header>
         <div>
           <p>We label stuff for you, because, we can&trade;</p>
-          <a href='/repos' className='button button-large'>
+          <a href='/login' className='button button-large'>
             <span className='mega-octicon octicon-mark-github'></span> Login with GitHub
           </a>
         </div>

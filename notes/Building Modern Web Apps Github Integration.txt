@@ -1,0 +1,48 @@
+# Building Modern Web Apps (Github Integration)
+
+## OAuth Explained
+
+OAuth is an authentication service that handles logins or other information using third-party APIs. It asks for permissions, then returns a token (after authenticating with *you*) that you use to login/access the information
+.
+
+## Login Route
+
+We're using the Github API for OAuth, also using **qs** to parse and encode URLs.
+
+First we create a route for login in the routes object. 
+
+```
+routes: {
+	// name : // corresponding handler fn
+	'': 'public',
+	'repos': 'repos',
+	'login': 'login'
+},
+```
+
+Then we create a login handler fn to handle the API request. We pass three parameters:
+
+```
+login () {
+	window.location = 'https://github.com/login/oauth/authorize?' + qs.stringify({
+	  scope: 'user,repo',
+	  redirect_uri: window.location.origin + '/auth/callback',
+	  client_id: 'f8dd69187841cdd22a26'
+	});
+}
+```
+
+Above the `redirect_uri` uses `window.location.origin`. If we did this anywhere in `github.com` it would return `http://github.com/`. It's the original root of the site.
+
+## Auth-Callback Route
+
+Let's create another route to get this query:
+
+```
+routes: {
+	…
+	'auth/callback?:query': 'authCallback'
+},
+```
+
+In the above route we can get parameters by using the `?:query` in the route handler.

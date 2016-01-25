@@ -257,4 +257,20 @@ export default React.createClass({
 
 `{…this.props}` - Will allow any attribute to be added without being first defined
 
+### Creating a Global App Object
+
+In app.js let's use a global object that we can pass around and extend. 
+
+```
+import app from 'ampersand-app'
+
+window.app = app
+
+app.extend({ init () { … } })
+
+app.init()
+```
+
+
+
 [^1]: http://www.funnyant.com/reactjs-what-is-it/
