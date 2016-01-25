@@ -1,6 +1,8 @@
+import app from 'ampersand-app'
 import Router from 'ampersand-router'
 import React from 'react'
 import qs from 'qs'
+import xhr from 'xhr'
 import PublicPage from './pages/public'
 import ReposPage from './pages/repos'
 import Layout from './layout'
@@ -25,6 +27,7 @@ export default Router.extend({
     '': 'public',
     'repos': 'repos',
     'login': 'login',
+    'logout': 'logout',
     'auth/callback?:query': 'authCallback'
   },
 
@@ -46,7 +49,21 @@ export default Router.extend({
 
   authCallback (query) {
     query = qs.parse(query)
-    console.log(query)
-  }
 
+    xhr({
+      // we're inputting our client secret in heroku
+      // allowing us to hide our client_secret
+      url: 'https://labelr-localhost.herokuapp.com/authenticate/' + query.code,
+      json: true
+    }, (err, req, body) => {
+      app.me.token = body.token
+      // replaces the history using internal navigation
+      this.redirectTo('/repos')
+    })
+  },
+
+  logout () {
+    window.localStorage.clear()
+    window.location = '/'
+  }
 })

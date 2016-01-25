@@ -2,10 +2,17 @@
 
 ## OAuth Explained
 
-OAuth is an authentication service that handles logins or other information using third-party APIs. It asks for permissions, then returns a token (after authenticating with *you*) that you use to login/access the information
-.
+OAuth is an authentication service that handles logins or other information using third-party APIs. It asks for permissions, then returns a token (after authenticating with *you*) that you use to login/access the information.
+
+1. Ask API for permission code
+2. Get back a code
+3. Send back the code (use GET request to get token)
+4. Get back a login token
+5. Save token
 
 ## Login Route
+
+1. Ask API for permission code
 
 We're using the Github API for OAuth, also using **qs** to parse and encode URLs.
 
@@ -36,6 +43,8 @@ Above the `redirect_uri` uses `window.location.origin`. If we did this anywhere 
 
 ## Auth-Callback Route
 
+2. Get back a code
+
 Let's create another route to get this query:
 
 ```
@@ -45,4 +54,97 @@ routes: {
 },
 ```
 
-In the above route we can get parameters by using the `?:query` in the route handler.
+In the above route we can get parameters by using the `?:query` in the route handler. Now let's define authCallback.
+
+3. Send back the code (use GET request to get token)
+4. Get back the login token
+
+We're using [Gatekeeper](https://github.com/prose/gatekeeper), which let's use configuration secrets in client-side applications using Heroku. We've setup [labelr.herokuapp](http://labelr-localhost.herokuapp.com/authenticate/CODE) to receive tokens. We're going to use [XHR](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest) to transfer data from the client to the server.
+
+```
+authCallback (query) {
+  query = qs.parse(query)
+
+  xhr({
+    // we're inputting our client secret in heroku
+    // allowing us to hide our client_secret
+    url: 'https://labelr-localhost.herokuapp.com/authenticate/' + query.code,
+    json: true
+  }, (err, req, body) => {
+    console.log(body)
+  })
+}
+```
+
+If you see xhr above, that is processing our HTTP request.
+
+Tip 1: The above `=>` is ES6 syntax. This is the equivalent of `function() { … }.bind(this)`.
+Tip 2: Always handle authorization through `https`
+
+## Persisting the Login
+
+5. Save token
+
+We want to save this login. We can create a model so we can add a session to the browser.
+
+```
+/* model/me.js */
+import Model from 'ampersand-model'
+
+export default Model.extend({
+  initialize () {
+		// localStorage is a lot safer in React
+    this.token = window.localStorage.token
+
+    this.on('change:token', this.onTokenChange)
+  },
+
+  props: {
+    id: 'number',
+    login: 'string',
+    avatar_url: 'string'
+  },
+
+  session: {
+    token: 'string'
+  },
+
+  onTokenChange () {
+    window.localStorage.token = this.token  
+  }
+})
+```
+
+localStorage is safer in React because it handles the DOM manipulation. You'll have more trouble creating a script tag.
+
+Let's fire this off when the HTTP request returns:
+
+```
+xhr({
+	…
+}, (err, req, body) => {
+  app.me.token = body.token
+  // replaces the history using internal navigation
+  this.redirectTo('/repos')
+})
+```
+
+## Logging Out
+
+A UX/security issue is that if you log out using OAuth, you can simply click login and it will get a new token. When you log out of your app, you're logging out of *your* app.
+
+So let's point something to `/logout`, and assign the route to a handler that clears the session:
+
+```
+routes: {
+	…
+	'logout': 'logout'
+}
+logout () {
+	window.localStorage.clear()
+	window.location = '/'
+}
+```
+
+## Fetching User Data
+

@@ -7,7 +7,6 @@ export default React.createClass({
   displayName: 'NavHelper',
 
   onClick (event) {
-    console.log('clicked')
     const pathname = localLinks.getLocalPathname(event)
 
     // Any click is going to bubble up to this

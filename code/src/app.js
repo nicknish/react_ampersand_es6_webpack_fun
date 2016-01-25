@@ -1,13 +1,15 @@
 import Router from './router'
 import styles from './styles/main.styl'
 import app from 'ampersand-app' // return singleton obj
+import Me from './models/me'
 
 window.app = app
 
 app.extend({
   init () {
-    this.router = new Router();
-    this.router.history.start();
+    this.me = new Me()
+    this.router = new Router()
+    this.router.history.start()
   }
 })
 

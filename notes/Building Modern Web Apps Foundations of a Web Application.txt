@@ -203,7 +203,7 @@ public () {
 },
 ```
 
-### Creating conditionals in layouts
+## Creating conditionals in layouts
 
 In other templating languages you'd be able to do an if-statement right in the return element. In React, this has to happen outside of the return.
 ```
@@ -257,7 +257,7 @@ export default React.createClass({
 
 `{…this.props}` - Will allow any attribute to be added without being first defined
 
-### Creating a Global App Object
+## Creating a Global App Object
 
 In app.js let's use a global object that we can pass around and extend. 
 
@@ -270,7 +270,5 @@ app.extend({ init () { … } })
 
 app.init()
 ```
-
-
 
 [^1]: http://www.funnyant.com/reactjs-what-is-it/
