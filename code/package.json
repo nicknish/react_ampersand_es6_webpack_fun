@@ -1,6 +1,6 @@
 {
   "name": "labelr",
-  "version": "1.43.0",
+  "version": "1.44.0",
   "dependencies": {
     "ampersand-app": "^1.0.4",
     "ampersand-model": "^5.0.3",
@@ -47,6 +47,6 @@
     "build": "webpack",
     "deploy": "surge -p public -d labelr.surge.sh",
     "start": "webpack-dev-server",
-    "yolo": "git add --all && git cm \"$(date)\" && npm version minor && git push origin master --tags && npm run build && npm run deploy"
+    "yolo": "git add --all && git cm \"$(date)\" && npm version minor && git push origin master --tags && npm run build"
   }
 }
