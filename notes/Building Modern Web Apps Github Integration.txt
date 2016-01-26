@@ -336,3 +336,24 @@ export default Model.extend(githubMixin, {
 }
 ```
 ## Fetching User Repos
+
+We want to associate the repos with our Me model. We're going to connect that using the collections attribute.
+
+```
+/* me.js */
+import RepoCollection from './repo-collection'
+…
+collections: {
+	// associate repos with me model
+	repos: RepoCollection
+},
+…
+fetchInitialData () {
+	if (this.token) {
+	  // automatically fetch user and repos onload
+	  this.fetch()
+	  this.repos.fetch()
+	}
+}
+```
+

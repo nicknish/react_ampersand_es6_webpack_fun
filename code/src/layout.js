@@ -1,4 +1,4 @@
-'import React from 'react'
+import React from 'react'
 import ampersandMixin from 'ampersand-react-mixin'
 import NavHelper from './components/nav-helper'
 
