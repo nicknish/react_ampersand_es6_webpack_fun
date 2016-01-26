@@ -370,8 +370,10 @@ repos () {
 },
 ```
 
+`{}` denotes JavaScript in JSX, whereas `{{}}` denotes strings
+
 ```
-/* repos.js */
+/* pages/repos.js */
 import React from 'react'
 import ampersandMixin from 'ampersand-react-mixin'
 
@@ -396,3 +398,65 @@ export default React.createClass({
 ```
 
 Remember, we *need* the mixin in order for the model to listen. 
+
+## Keys
+
+React is throwing the error: "Each child in an array needs a unique identifier", because it can't run at full efficiency if it's unsure if items are moving around in the collection, or they're being deleted or what.
+
+```
+/* pages/repos.js */
+{repos.map((repo) => {
+	return (<li key={repo.id}><a href="#">{repo.full_name}<a></li>)
+})}
+```
+
+## Adding icons
+
+We're going to use Github's open-source Octicons. They've already created a font library for us, so we just need to download it and include it
+
+`npm install octicons`
+
+Then in our `app.js`, we can use webpack's require power to just include the path to the CSS file:
+
+```
+import icons from 'octicons/octicons/octicons.css'
+```
+
+Now when you build, webpack will look for URL calls in your CSS files and include those assets in your `/public`! Not only that, it automatically hashes your CSS so you have caching control. Hell yea! And if there's a single svg image (you can set the size) it will automatically encode it into a data URI.
+
+## Derived Properties
+
+How do we add the URLs to our repos? We could dynamically build the string in the `repos.js` href, but it's often cleaner to just do it in the model as a derived property!
+
+```
+/* model/repo.js */
+	…
+	props: {
+		…
+	},
+	derived: {
+		appUrl: {
+			deps: ['full_name'],
+			fn () {
+				return '/' + this.full_name
+			}
+		}
+	}
+})
+```
+
+Now let's start building URLs in our href. `href={repo.appUrl}`.
+
+```
+/* repo.js */
+…
+return (
+	<li key={repo.id}>
+	  <span className="octicon octicon-repo"></span> <a href={repo.appUrl}>{repo.full_name}</a>
+	</li>
+)
+…
+```
+
+## Repo Detail Page
+

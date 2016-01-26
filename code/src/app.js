@@ -1,5 +1,6 @@
 import Router from './router'
 import styles from './styles/main.styl'
+import icons from 'octicons/octicons/octicons.css'
 import app from 'ampersand-app' // return singleton obj
 import Me from './models/me'
 
