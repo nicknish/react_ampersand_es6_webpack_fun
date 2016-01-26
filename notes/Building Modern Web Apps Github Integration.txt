@@ -129,6 +129,18 @@ xhr({
 })
 ```
 
+Finally let's update the app init:
+
+```
+app.extend({
+  init () {
+    this.me = new Me()
+    this.router = new Router()
+    this.router.history.start()
+  }
+})
+```
+
 ## Logging Out
 
 A UX/security issue is that if you log out using OAuth, you can simply click login and it will get a new token. When you log out of your app, you're logging out of *your* app.
@@ -147,4 +159,110 @@ logout () {
 ```
 
 ## Fetching User Data
+
+We're now going to extend the Me model:
+
+```
+export default Model.extend({
+  url: 'https://api.github.com/user',
+
+  initialize () {
+    this.token = window.localStorage.token
+    this.on('change:token', this.onTokenChange)
+  },
+
+  props: {
+    id: 'number',
+    login: 'string',
+    avatar_url: 'string'
+  },
+
+  session: {
+    token: 'string'
+  },
+
+  onTokenChange () {
+    window.localStorage.token = this.token  
+    this.fetchInitialData()
+  },
+
+  ajaxConfig () {
+    return {
+      headers: {
+        Authorization: 'token ' + this.token
+      }
+    }
+  },
+
+  fetchInitialData () {
+    if (this.token) {
+      this.fetch()
+    }
+  }
+})
+```
+
+Many of the above are aided by [ampersand-model](https://ampersandjs.com/docs/#ampersand-model-url). 
+
+Again, we're going to update the app init:
+
+```
+app.extend({
+  init () {
+    this.me = new Me()
+    this.me.fetchInitialData()
+    this.router = new Router()
+    this.router.history.start()
+  }
+})
+```
+
+## Binding to a Model
+
+We're going to use a mixin to watch for "props" passed in the layout using `ampersand-react-mixin`. If a change in the model is detected, the render method of the component will be called. 
+
+This let's us make changes on the layout as new data is passed in, in this case rendering the user name after the data has been passed in.
+
+```
+/* layout.js */
+…
+import app from 'ampersand-app'
+import ampersandMixin from 'ampersand-react-mixin'
+
+export default React.createClass({
+  mixins: [ampersandMixin],
+
+  displayName: 'Layout',
+
+	…
+})
+```
+
+Now pass in the model to the layout:
+
+```
+<Layout me={app.me}>
+  {page}
+</Layout>
+```
+
+Tip 1: ES6 has a shorthand {prop} = this.parentProp. See example below:
+```
+// ES6 destructuring assignment
+// local reference to this.props.me
+const {me} = this.props
+console.log(me.name)
+```
+
+### Lifecycle Methods
+
+React has something called lifecycle methods, that executed at specific points in a component's lifecycle.
+
+`ampersand-react-mixin` watches for updates to the component. If you give it a property that's a model, at the point a model property in the component changes, it will let the model know. 
+
+You have registered actions at the application level and your data stores. Then you have a central dispatcher that fires events once. The data stores (models) listen for actions, and you get a single change event that fires an action.
+
+## Collections and Mixins
+
+
 
