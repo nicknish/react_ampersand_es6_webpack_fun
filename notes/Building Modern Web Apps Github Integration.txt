@@ -264,5 +264,75 @@ You have registered actions at the application level and your data stores. Then 
 
 ## Collections and Mixins
 
+We're creating two models now, repo and repo-collection.
 
+A repo is an observable model, whereas the repo-collection is an observable array of models.
 
+```
+/* repo.js *.
+import Model from 'ampersand-model'
+
+export default Model.extend({
+
+  // corresponds to Github API repo properties  
+  props: {
+    id: 'number',
+    name: 'string',
+    full_name: 'string'
+  }
+})
+```
+
+```
+/* repo-collection.js */
+import Collection from 'ampersand-rest-collection'
+import Repo from './repo'
+
+export default Collection.extend({
+  url: 'https://api.github.com/user/repos',
+
+  // pass single model into the collection
+  model: Repo
+})
+```
+
+Because we're beginning to reuse our ajaxConfig method for the Github auth token in `me.js`, we're separating that fn into a helper model. 
+
+```
+/* github-mixin.js */
+import app from 'ampersand-app'
+
+export default {
+
+  ajaxConfig () {
+    console.log(app.me.token)
+
+    return {
+      headers: {
+				// no longer this.token
+				// import app above to always use global token
+        Authorization: 'token ' + app.me.token
+      }
+    }
+  }
+}
+```
+
+Now we need to include this into our `repo-collection.js` and `me.js`
+
+```
+import githubMixin from '../helpers/github-mixin'
+
+export default Collection.extend(githubMixin, {
+	…
+}
+```
+
+```
+import githubMixin from '../helpers/github-mixin'
+
+export default Model.extend(githubMixin, {
+…
+}
+```
+## Fetching User Repos
