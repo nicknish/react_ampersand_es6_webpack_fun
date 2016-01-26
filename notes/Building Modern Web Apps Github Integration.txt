@@ -460,3 +460,69 @@ return (
 
 ## Repo Detail Page
 
+What do we do when we want to create a new page?
+
+1. Create a route with a corresponding handler fn
+2. Create the component and include it in our router
+3. In the handler pass in any models necessary
+
+```
+/* repo-detail.js */
+import React from 'react'
+
+export default React.createClass({
+  displayName: 'RepoDetail',
+
+  render () {
+    const {repo} = this.props
+
+    return (
+      <div className='container'>
+        <h1>{repo.full_name}</h1>
+        <p></p>
+        <ul></ul>
+      </div>
+    )
+  }
+})
+```
+
+```
+/* router.js */
+import RepoDetail from './pages/repo-detail.js'
+…
+routes: {
+	…
+	'repo/:owner/:name': 'repoDetail'
+},
+repoDetail (owner, name) {
+	/* Let's create a convenience method to handle finding the name to build our URL */
+}
+```
+
+We're going to create a convenience method to handle finding the name to build our URL. We're going to build it on the model instead of trying to do all the logic in the `router.js` (our controller, really).
+
+```
+/* repo-collection.js */
+…
+  getByFullName (fullName) {
+		// findWhere does a true/false check
+		// to find an item in a list
+		// using an object with match criteria
+    let model = this.findWhere({
+      full_name: fullName
+    })
+
+    if (!model) {
+      model = new Repo({full_name: fullName})
+    }
+
+    return model
+  }
+})
+```
+
+## Optimizing the Details Page
+
+How do we handle if a user enters the application through the details page. We can modify the model to determine if it needs to fetch new data from the server.
+

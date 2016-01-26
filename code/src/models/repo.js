@@ -15,7 +15,7 @@ export default Model.extend({
       // it will rerun this fn()
       deps: ['full_name'],
       fn () {
-        return '/' + this.full_name
+        return '/repo/' + this.full_name
       }
     }
   }
