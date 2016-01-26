@@ -357,3 +357,42 @@ fetchInitialData () {
 }
 ```
 
+## Rendering Repos
+
+We want to pass our collection of repos into the repos page, so we can render them. 
+
+In our router, we can pass our model into the React component.
+
+```
+/* router.js */
+repos () {
+	this.renderPage(<ReposPage repos={app.me.repos}/>)
+},
+```
+
+```
+/* repos.js */
+import React from 'react'
+import ampersandMixin from 'ampersand-react-mixin'
+
+export default React.createClass({
+  mixins: [ampersandMixin],
+  
+  render () {
+    const {repos} = this.props
+
+    return (
+      <div>
+        <h2>Repos</h2>
+        <ul>
+        {repos.map((repo) => {
+          return (<li><a href="">{repo.full_name}</a></li>)
+        })}
+        </ul>
+      </div>
+    )
+  }
+})
+```
+
+Remember, we *need* the mixin in order for the model to listen. 
