@@ -1,0 +1,8 @@
+# Building Modern Web Apps (Repo Labels)
+
+## Exercise: Storing Labels
+
+The exercise is to first make two models, a label and a label collection and connect them to the repo model. Then, render the labels on the page.
+
+A repo can have a label collection (therefore many labels).
+

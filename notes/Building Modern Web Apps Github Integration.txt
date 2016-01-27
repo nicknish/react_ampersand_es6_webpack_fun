@@ -526,3 +526,42 @@ We're going to create a convenience method to handle finding the name to build o
 
 How do we handle if a user enters the application through the details page. We can modify the model to determine if it needs to fetch new data from the server.
 
+At the point the user gets to the `/repos` page, we have all the data we need in localStorage. So we can still access these pages filling in data with localStorage, and if there's different data when we call `model.fetch()`, it will refresh that data and replace it.
+
+```
+/* repo-collection.js */
+getByFullName (fullName) {
+	// findWhere runs a true/false check
+	// to find an item in a list
+	// using an object with match criteria
+	let model = this.findWhere({
+	  full_name: fullName
+	})
+	
+	if (!model) {
+	  model = new Repo({full_name: fullName})
+	}
+	
+	model.fetch()
+	
+	return model
+}
+```
+
+```
+/* repo.js */
+url () {
+	return 'https://api.github.com/repos/' + this.full_name
+},
+```
+
+But we need to add githubMixin to the `model/repo.js`
+
+```
+/* model/repo.js */
+import githubMixin from '../helpers/github-mixin'
+
+export default Model.extend(githubMixin, {
+	…  
+})
+```

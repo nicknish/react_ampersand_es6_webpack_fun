@@ -1,0 +1,58 @@
+# Building Modern Web Apps (Frameworks)
+
+## Why Frameworks
+
+Frameworks help organize code and use proven techniques. They often provide solutions to usual problems and often allow for easier collaboration.
+
+> I'm more interested in optimizing a person's understanding of problems than their understanding of solutions
+
+What are the problems we face with these kinds of apps?
+
+1. fetching and storing state
+2. rendering HTML
+3. binding state to DOM
+4. clientside routing
+5. server-side rendering
+6. composing views
+
+## Framework Rundown
+
+**Angular**
+
+* easy to start
+* logic mixed with HTML
+* you're learning angular, not JS
+* highly abstracted
+
+**Ember**
+
+* lots of decisions made for you
+* everything is "ember" as a base
+* lack of flexibility
+* rather large
+
+**Backbone**
+
+* first one to go big
+* basic building blocks
+* extremely flexbile
+* extremely broad
+* you have to solve more problems
+
+**React**
+
+* not really a framework
+* view layer
+* doesn't directly deal with storing state
+* can render server-side
+* can re-inflate
+* dramatically simplifies bindings
+
+**Ampersand**
+
+* fork of backbone
+* a fear-of-commitment framework
+* no "core" modules
+* individual npm modules
+* insanely flexible
+
