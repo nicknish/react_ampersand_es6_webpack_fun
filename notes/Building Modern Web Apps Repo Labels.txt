@@ -77,11 +77,100 @@ import LabelCollection from './label-collection'
 })
 ```
 
-**Fetch the latest labels**
+**6. Fetch the latest labels**
 ```
 /* repos.js */
 fetch () {
-	Model.prototype.fetch.apply()
+	Model.prototype.fetch.apply(this, arguments)
 	this.labels.fetch()
 }
+```
+
+**7. Render it in the page**
+```
+/* router.js */
+repoDetail (owner, name) {
+	const model = app.me.repos.getByFullName(owner + '/' + name)
+	// passing labels so we can observe them
+	this.renderPage(<RepoDetail repo={model} labels={model.label} />)
+},
+```
+
+```
+/* repo-detail.js */
+import React from 'react'
+import ampersandMixin from 'ampersand-react-mixin'
+
+export default React.createClass({
+  mixins: ['ampersandMixin'],
+  displayName: 'RepoDetail',
+
+  render () {
+    const {repo, labels} = this.props
+
+    return (
+      <div className='container'>
+        <h1>{repo.full_name}</h1>
+        <p></p>
+        <ul>
+          {labels.map((label) => {
+            let cssColor = '#' + label.color
+
+            return (
+              <li>
+                <div className='label'>
+                  <span className='label-color' style={{backgroundColor: cssColor}}>&nbsp;{label.name}</span>
+                  <span></span>
+                  <span className='octicon octicon-pencil'></span>
+                  <span className='octicon octicon-x'></span>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    )
+  }
+})
+```
+
+## Using extend()
+
+Extend merges two objects. When we extend the Model, they get added to the Model.prototype.
+
+## Exercise: Creating a Label Item Component
+
+1. Create a React component with createClass and a render() function that returns the label name
+2. Import ampersand-react-mixin (include this) and the LabelItem component. 
+3. Iterate over labels and return label component, passing in necessary model data.
+
+**Create a React component**
+```
+import React from 'react'
+
+export default React.createClass({
+  
+  render () {
+    const {label} = this.props  
+  
+    return (<li>{label.name}</li>)
+  }
+})
+```
+
+**Import ampersand-react-mixin and LabelItem**
+```
+import ampersandMixin from 'ampersand-react-mixin'
+import LabelItem from '../components/label-item'
+
+export default React.createClass({
+  mixins: ['ampersandMixin'],
+	...
+```
+
+**Iterate over labels, pass in model data**
+```
+{repo.labels.map((label) => {
+    return <LabelItem key={label.name} label={label} />
+})}
 ```
