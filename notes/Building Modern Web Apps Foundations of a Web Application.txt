@@ -255,7 +255,7 @@ export default React.createClass({
 })D
 ```
 
-`{…this.props}` - Will allow any attribute to be added without being first defined
+`{...this.props}` - Will allow any attribute to be added without being first defined
 
 ## Creating a Global App Object
 
@@ -266,9 +266,10 @@ import app from 'ampersand-app'
 
 window.app = app
 
-app.extend({ init () { … } })
+app.extend({ init () { ... } })
 
 app.init()
 ```
 
 [^1]: http://www.funnyant.com/reactjs-what-is-it/
+...

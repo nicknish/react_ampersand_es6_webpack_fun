@@ -10,7 +10,11 @@ export default React.createClass({
       <div className='container'>
         <h1>{repo.full_name}</h1>
         <p></p>
-        <ul></ul>
+        <ul>
+          {repo.labels.map(label, {
+            asdffasd
+          })}
+        </ul>
       </div>
     )
   }

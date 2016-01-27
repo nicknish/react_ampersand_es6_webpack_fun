@@ -49,7 +49,7 @@ Let's create another route to get this query:
 
 ```
 routes: {
-	…
+	...
 	'auth/callback?:query': 'authCallback'
 },
 ```
@@ -78,7 +78,7 @@ authCallback (query) {
 
 If you see xhr above, that is processing our HTTP request.
 
-Tip 1: The above `=>` is ES6 syntax. This is the equivalent of `function() { … }.bind(this)`.
+Tip 1: The above `=>` is ES6 syntax. This is the equivalent of `function() { ... }.bind(this)`.
 Tip 2: Always handle authorization through `https`
 
 ## Persisting the Login
@@ -121,7 +121,7 @@ Let's fire this off when the HTTP request returns:
 
 ```
 xhr({
-	…
+	...
 }, (err, req, body) => {
   app.me.token = body.token
   // replaces the history using internal navigation
@@ -149,7 +149,7 @@ So let's point something to `/logout`, and assign the route to a handler that cl
 
 ```
 routes: {
-	…
+	...
 	'logout': 'logout'
 }
 logout () {
@@ -225,7 +225,7 @@ This let's us make changes on the layout as new data is passed in, in this case 
 
 ```
 /* layout.js */
-…
+...
 import app from 'ampersand-app'
 import ampersandMixin from 'ampersand-react-mixin'
 
@@ -234,7 +234,7 @@ export default React.createClass({
 
   displayName: 'Layout',
 
-	…
+	...
 })
 ```
 
@@ -324,7 +324,7 @@ Now we need to include this into our `repo-collection.js` and `me.js`
 import githubMixin from '../helpers/github-mixin'
 
 export default Collection.extend(githubMixin, {
-	…
+	...
 }
 ```
 
@@ -332,7 +332,7 @@ export default Collection.extend(githubMixin, {
 import githubMixin from '../helpers/github-mixin'
 
 export default Model.extend(githubMixin, {
-…
+...
 }
 ```
 ## Fetching User Repos
@@ -342,12 +342,12 @@ We want to associate the repos with our Me model. We're going to connect that us
 ```
 /* me.js */
 import RepoCollection from './repo-collection'
-…
+...
 collections: {
 	// associate repos with me model
 	repos: RepoCollection
 },
-…
+...
 fetchInitialData () {
 	if (this.token) {
 	  // automatically fetch user and repos onload
@@ -430,9 +430,9 @@ How do we add the URLs to our repos? We could dynamically build the string in th
 
 ```
 /* model/repo.js */
-	…
+	...
 	props: {
-		…
+		...
 	},
 	derived: {
 		appUrl: {
@@ -449,13 +449,13 @@ Now let's start building URLs in our href. `href={repo.appUrl}`.
 
 ```
 /* repo.js */
-…
+...
 return (
 	<li key={repo.id}>
 	  <span className="octicon octicon-repo"></span> <a href={repo.appUrl}>{repo.full_name}</a>
 	</li>
 )
-…
+...
 ```
 
 ## Repo Detail Page
@@ -490,9 +490,9 @@ export default React.createClass({
 ```
 /* router.js */
 import RepoDetail from './pages/repo-detail.js'
-…
+...
 routes: {
-	…
+	...
 	'repo/:owner/:name': 'repoDetail'
 },
 repoDetail (owner, name) {
@@ -504,7 +504,7 @@ We're going to create a convenience method to handle finding the name to build o
 
 ```
 /* repo-collection.js */
-…
+...
   getByFullName (fullName) {
 		// findWhere does a true/false check
 		// to find an item in a list
@@ -562,6 +562,6 @@ But we need to add githubMixin to the `model/repo.js`
 import githubMixin from '../helpers/github-mixin'
 
 export default Model.extend(githubMixin, {
-	…  
+	...  
 })
 ```

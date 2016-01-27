@@ -6,3 +6,82 @@ The exercise is to first make two models, a label and a label collection and con
 
 A repo can have a label collection (therefore many labels).
 
+1. Make Label and Label Collection models
+2. Define Label properties
+3. Connect Label to the Label Collection model
+4. Make sure Label Collection will fetch correctly (Authentication and URL)
+5. Connect the Label Collection to the Repo model
+6. Fetch the newest labels
+7. Render it in the page
+
+**2. Define Label properties**
+```
+/* label.js */
+import Model from 'ampersand-model'
+
+export default Model.extend({
+
+  props: {
+    name: 'string',
+    color: 'string'
+  }
+})
+```
+
+**3. Connect label to the label collection model**
+```
+/* label-collection.js */
+import Collection from 'ampersand-rest-collection'
+import Label from './label'
+
+export default Collection.extend({
+	// build URL /repos/user/repo/labels
+  url () {
+
+  },
+	
+	// Connect label to the label collection model
+  model: Label
+})
+```
+
+**4. Make sure Label Collection will fetch correctly (Authentication and URL)**
+```
+/* label-collection.js */
+import Collection from 'ampersand-rest-collection'
+import Label from './label'
+import githubMixin from '../helpers/github-mixin'
+
+export default Collection.extend(githubMixin, {
+  // build URL /repos/user/repo/labels
+  url () {
+		// this.parent connects parent model
+    return this.parent.url() + '/labels'
+  },
+	
+  // Connect label to the label collection model
+  model: Label
+})
+```
+
+**5. Connect the Label Collection to the Repo model**
+
+```
+/* repo.js */
+import LabelCollection from './label-collection'
+	...
+	// Connect label collection to the repo model
+	collections: {
+		labels: LabelCollection
+	}
+})
+```
+
+**Fetch the latest labels**
+```
+/* repos.js */
+fetch () {
+	Model.prototype.fetch.apply()
+	this.labels.fetch()
+}
+```
