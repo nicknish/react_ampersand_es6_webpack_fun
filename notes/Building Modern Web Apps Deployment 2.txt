@@ -71,7 +71,7 @@ In the package.json we can specify our deploy script:
 }
 ```
 
-Because we didn't have a 200 page build in our public folder, let's customize our webpack config to generate that file.
+Because we didn't have a 200 page build in our public folder, let's customize our webpack config to generate that file. Why is a 200.html page important? For client-side/single-page JavaScript apps, you need to ensure when a request for a URL comes in for a non-static HTML page, it will reach your 200.html page. This allows you to use your client-side router.
 
 ```
 /* webpack.config.js */
@@ -89,3 +89,49 @@ module.exports = getConfig({
   }
 })
 ```
+
+**There we go, we have our app deployed. Woohoo**!
+
+## Pre-rendering Content
+
+How do you pre-render HTML and CSS with dynamic content? We can modify the webpack.config to pre-render the HTML and CSS, and have React take over when the app has finished downloading.
+
+```
+/* webpack.config.js */
+var getConfig = require('hjs-webpack')
+var React = require('react')
+
+// use babel to rewrite Node's require, so we can use PublicPage
+require('babel/register')
+
+// include landing page to pre-render
+var PublicPage = require('./src/pages/public')
+
+module.exports = getConfig({
+	in: 'src/app.js',
+  out: 'public',
+  clearBeforeBuild: true,
+  html: function(context) {
+    // no JSX allowed here, let's write what JSX would render to
+    const publicPage = React.renderToString(React.createElement(PublicPage))
+
+    return {
+      'index.html': context.defaultTemplate({html: publicPage}),
+      '200.html': context.defaultTemplate()
+    }
+  }
+})
+```
+
+Now the `index.html` built by webpack renders all the static HTML and CSS content:
+
+```
+<!-- index.html -->
+<!doctype html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/><link rel="stylesheet" href="/labelr.1.69.0.css"/></head><body><div class="container" data-reactid=".2f21e7yl2ww" data-react-checksum="1907477182"><header role="banner" data-reactid=".2f21e7yl2ww.0"><h1 data-reactid=".2f21e7yl2ww.0.0">Labelr</h1>...</body><script src="/labelr.1.69.0.js"></script>
+```
+
+
+## Generating Layout Markup
+
+How do you apply the above the layout page? Everything in our app is at least going to have the layout markup, so let's pre-render that. This way, the user will see some of the layout even if the rest of the application and data is not loaded. Once the data is loaded, React will re-render the page.
+
