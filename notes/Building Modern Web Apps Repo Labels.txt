@@ -325,5 +325,3 @@ onCancelClick (event) {
 	this.setState(this.getInitialState())
 },
 ```
-
-## 

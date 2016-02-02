@@ -1,0 +1,57 @@
+# Building Modern Web Apps (XHR Requests)
+
+## Sending Updates with Github
+
+Our goal is to build this URL dynamically so we can send PATCH requests to Github:
+
+`PATCH /repos/:owner/:repo/labels/:name`
+
+```
+/* label.js */
+import xhr from 'xhr'
+...
+
+update (attributes) {
+    
+	const oldAttributes = this.getAttributes({props: true, session: false})
+	
+	xhr({
+	  // based off of parent collection url()
+	  url: this.url(),
+	  json: attributes,
+	  method: 'PATCH',
+	  headers: {
+	    'Authorization': 'token ' + app.me.token
+	  }
+	}, (err, req, body) => {
+	  // if error out, revert back
+	  if (err) {
+	    this.set(oldAttributes)
+	    console.log('something went wrong, check your wifi')
+	  }
+	})
+	this.set(attributes)
+}
+```
+
+```
+/* label-item.js */
+...
+onSubmit (event) {
+	event.preventDefault()
+	const {label} = this.props
+	label.update(this.state)
+	label.editing = false
+},
+...
+<form onSubmit={this.onSubmit} className='label'>
+...
+```
+
+On forms, we need to preventDefault because if we have a form without an action, it will encode the inputs, append them to URL, and GET that location.
+
+
+**Sidenote: Refactor as you go, even in larger codebases**.
+
+## Creating New Labels
+
