@@ -92,7 +92,7 @@ fetch () {
 repoDetail (owner, name) {
 	const model = app.me.repos.getByFullName(owner + '/' + name)
 	// passing labels so we can observe them
-	this.renderPage(<RepoDetail repo={model} labels={model.label} />)
+	this.renderPage(<RepoDetail repo={model} labels={model.labels} />)
 },
 ```
 
