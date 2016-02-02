@@ -6,27 +6,69 @@ Do we really want someone to hit the repo/:owner/:name route if they're not logg
 
 ```
 function requiresAuth (handlerName) {
-  // app.me.token does not exist yet at instantiatin
-  // but when the function is returned by the router
-  return function () {
-    if (app.me.token) {
-      this[handlerName].apply(this, arguments)
-    } else {
-     this.redirectTo('/')
+    // app.me.token does not exist yet at instantiation
+    // but when the function is returned by the router
+    return function () {
+        if (app.me.token) {
+          this[handlerName].apply(this, arguments)
+        } else {
+         this.redirectTo('/')
+        }
     }
-  }
 }
 
 export default Router.expand({
-	...
-  routes: {
-    // name : // corresponding handler fn
-    '': 'public',
-    'repos': requiresAuth('repos'),
-    'login': 'login',
-    'logout': 'logout',
-    'repo/:owner/:name': requiresAuth('repoDetail'),
-    'auth/callback?:query': 'authCallback'
-  },
+    ...
+    routes: {
+        // name : // corresponding handler fn
+        '': 'public',
+        'repos': requiresAuth('repos'),
+        'login': 'login',
+        'logout': 'logout',
+        'repo/:owner/:name': requiresAuth('repoDetail'),
+        'auth/callback?:query': 'authCallback'
+    },
 })
 ```
+
+## Handling 404 Errors
+
+We can set a wildcard route for 404 errors:
+
+```
+/* router.js */
+import MessagePage from './pages/message'
+...
+routes: {
+	// name : // corresponding handler fn
+	'': 'public',
+	'repos': requiresAuth('repos'),
+	'login': 'login',
+	'logout': 'logout',
+	'repo/:owner/:name': requiresAuth('repoDetail'),
+	'auth/callback?:query': 'authCallback',
+	// wildcard
+	'*fourOhfour': 'fourOhfour'
+},
+...
+
+fourOhfour () {
+    this.renderPage(<MessagePage title='Not Found' body='Sorry nothing here.'/>)
+}
+```
+```
+/* pages/message.js */
+import React from react
+export default React.createClass({
+    displayName: 'MessagePage',
+    render () {
+        return (
+        <div>
+        <h2>{this.props.title}</h2>
+        <p>{this.props.body}</p>
+        <div>
+        )
+    }
+})
+```
+
