@@ -9,6 +9,18 @@ import RepoDetail from './pages/repo-detail'
 import Layout from './layout'
 import NavHelper from './components/nav-helper'
 
+function requiresAuth (handlerName) {
+  // app.me.token does not exist yet at instantiatin
+  // but when the function is returned by the router
+  return function () {
+    if (app.me.token) {
+      this[handlerName].apply(this, arguments)
+    } else {
+     this.redirectTo('/')
+    }
+  }
+}
+
 export default Router.extend({
 
   renderPage (page, opts = {layout: true}) {
@@ -26,10 +38,10 @@ export default Router.extend({
   routes: {
     // name : // corresponding handler fn
     '': 'public',
-    'repos': 'repos',
+    'repos': requiresAuth('repos'),
     'login': 'login',
     'logout': 'logout',
-    'repo/:owner/:name': 'repoDetail',
+    'repo/:owner/:name': requiresAuth('repoDetail'),
     'auth/callback?:query': 'authCallback'
   },
 

@@ -1,0 +1,32 @@
+# Building Modern Web Apps (Security)
+
+## Exercise: Securing Routes
+
+Do we really want someone to hit the repo/:owner/:name route if they're not logged in? No, there won't be any data! So let's require authorization with a helper.
+
+```
+function requiresAuth (handlerName) {
+  // app.me.token does not exist yet at instantiatin
+  // but when the function is returned by the router
+  return function () {
+    if (app.me.token) {
+      this[handlerName].apply(this, arguments)
+    } else {
+     this.redirectTo('/')
+    }
+  }
+}
+
+export default Router.expand({
+	...
+  routes: {
+    // name : // corresponding handler fn
+    '': 'public',
+    'repos': requiresAuth('repos'),
+    'login': 'login',
+    'logout': 'logout',
+    'repo/:owner/:name': requiresAuth('repoDetail'),
+    'auth/callback?:query': 'authCallback'
+  },
+})
+```
