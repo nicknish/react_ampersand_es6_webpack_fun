@@ -248,3 +248,31 @@ onCancelClick () {
 <span onClick={this.onEditClick}></span>
 ```
 
+## Exercise: Deleting a Label
+
+Looking at the Github API, we just need to follow this URL structure:
+
+`DELETE /repos/:owner/:repo/labels/:name`
+
+Because Ampersand REST model comes with CRUD operations, we simply need to help it build the URL structure. We can specify `idAttribute` for `'name'`.
+
+```
+/* model/label.js */
+import Model from 'ampersand-model'
+import githubMixin from '../helpers/github-mixin'
+
+export default Model.extend(githubMixin, {
+	idAttribute: 'name',
+	...
+}
+```
+
+```
+/* label-item.js */
+onDeleteClick (event) {
+	event.preventDefault()
+	this.props.label.destroy()
+},
+...
+<span onClick={this.onDeleteClick} className='octicon octicon-x'></span>
+```
