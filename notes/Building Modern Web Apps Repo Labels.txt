@@ -276,3 +276,26 @@ onDeleteClick (event) {
 ...
 <span onClick={this.onDeleteClick} className='octicon octicon-x'></span>
 ```
+
+## Editing a Label
+
+```
+/* label-item.js */
+getInitialState () {
+	const {name, color} = this.props.label
+	
+	return {name, color}
+},
+
+onNameChange (event) {
+	// React will rerender state
+	this.setState({
+	  // event.target.value grabs input value
+	  name: event.target.value
+	})
+},
+...
+<input name='name' onChange={this.onNameChange} value={this.state.name}/>
+```
+
+## Editing Label Colors
