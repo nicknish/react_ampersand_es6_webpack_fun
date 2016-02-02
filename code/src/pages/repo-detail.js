@@ -3,7 +3,7 @@ import ampersandMixin from 'ampersand-react-mixin'
 import LabelItem from '../components/label-item'
 
 export default React.createClass({
-  mixins: ['ampersandMixin'],
+  mixins: [ampersandMixin],
   displayName: 'RepoDetail',
 
   onAddClick (event) {
