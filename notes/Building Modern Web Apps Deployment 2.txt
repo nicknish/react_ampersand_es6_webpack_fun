@@ -135,3 +135,36 @@ Now the `index.html` built by webpack renders all the static HTML and CSS conten
 
 How do you apply the above the layout page? Everything in our app is at least going to have the layout markup, so let's pre-render that. This way, the user will see some of the layout even if the rest of the application and data is not loaded. Once the data is loaded, React will re-render the page.
 
+Why are we using the `html:` property in the defaultTemplate method? Because we want to fill the body which would otherwise be empty.
+
+```
+...
+var Layout = require('./src/layout')
+
+module.exports = getConfig({
+	in: 'src/app.js',
+  out: 'public',
+  clearBeforeBuild: true,
+  html: function(context) {
+    // no JSX allowed here, let's write what JSX would render to
+    const publicPage = React.renderToString(React.createElement(PublicPage))
+
+    // pass in data, doesn't need to have data as long as it doesn't blow up
+    const layoutPage = React.renderToString(React.createElement(Layout, {me: {}}))
+
+    return {
+      'index.html': context.defaultTemplate({html: publicPage}),
+      '200.html': context.defaultTemplate({html: layoutPage})
+    }
+  }
+})
+```
+
+Using these different techniques, you can determine what to pre-render and cache, while having a JavaScript app that's crawlable.
+
+Even cooler, if there are some public pages like `/about`, if they hit these pages, the JavaScript is downloading and caching in the background.
+
+## Final Thoughts
+
+1. Optimize for readability
+2. 
