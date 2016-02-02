@@ -7,6 +7,6 @@ const config = {
     authUrl: 'https://labelr-production.herokuapp.com/authenticate',
     clientId: '9cc77faf5ffc6f6f9b9a'
   }
-}[location.hostname]
+}[window.location.hostname]
 
 export default config

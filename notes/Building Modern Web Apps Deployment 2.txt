@@ -15,7 +15,7 @@ const config = {
     authUrl: 'https://labelr-production.herokuapp.com/authenticate',
     clientId: '9cc77faf5ffc6f6f9b9a'
   }
-}[location.hostname]
+}[window.location.hostname]
 
 export default config
 ```
@@ -52,3 +52,40 @@ authCallback (query) {
 
 ## Deploying with Surge
 
+[https://surge.sh/](https://surge.sh/)
+
+Surge allows you to create static websites for FREE.
+
+In the package.json we can specify our deploy script:
+
+`"surge -p DIRECTORY -d DOMAIN"`
+
+```
+/* package.json */
+  "scripts": {
+    "build": "webpack",
+    "deploy": "surge -p public -d labelr.surge.sh",
+    "start": "webpack-dev-server",
+    "yolo": "git add --all && git cm \"$(date)\" && npm version minor && git push origin master --tags && npm run build"
+  }
+}
+```
+
+Because we didn't have a 200 page build in our public folder, let's customize our webpack config to generate that file.
+
+```
+/* webpack.config.js */
+var getConfig = require('hjs-webpack')
+
+module.exports = getConfig({
+	in: 'src/app.js',
+  out: 'public',
+  clearBeforeBuild: true,
+  html: function(context) {
+    return {
+      'index.html': context.defaultTemplate(),
+      '200.html': context.defaultTemplate()
+    }
+  }
+})
+```
