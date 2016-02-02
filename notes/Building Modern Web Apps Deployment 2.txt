@@ -1,0 +1,54 @@
+# Building Modern Web Apps (Deployment)
+
+## Using a Config File
+
+How do you deal with different configurations for different setups? Let's create a config module at the route:
+
+```
+/* config.js */
+const config = {
+  'localhost': {
+    authUrl: 'https://labelr-localhost.herokuapp.com/authenticate',
+    clientId: 'f8dd69187841cdd22a26'
+  },
+  'labelr.surge.sh': {
+    authUrl: 'https://labelr-production.herokuapp.com/authenticate',
+    clientId: '9cc77faf5ffc6f6f9b9a'
+  }
+}[location.hostname]
+
+export default config
+```
+
+Import the config file and remove t
+
+```
+/* router.js */
+login () {
+    window.location = 'https://github.com/login/oauth/authorize?' + qs.stringify({
+      scope: 'user,repo',
+      redirect_uri: window.location.origin + '/auth/callback',
+      client_id: config.clientId
+    });
+},
+
+authCallback (query) {
+    query = qs.parse(query)
+
+    xhr({
+      // we're inputting our client secret in heroku
+      // allowing us to hide our client_secret
+      url: config.authUrl + '/' + query.code,
+      json: true
+    }, (err, req, body) => {
+      app.me.token = body.token
+      // replaces the history using internal navigation
+      this.redirectTo('/repos')
+    })
+
+    this.renderPage(<MessagePage title='Fetching your data' />)
+},
+```
+
+## Deploying with Surge
+

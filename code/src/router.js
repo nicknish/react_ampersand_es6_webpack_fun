@@ -9,6 +9,7 @@ import RepoDetail from './pages/repo-detail'
 import MessagePage from './pages/message'
 import Layout from './layout'
 import NavHelper from './components/nav-helper'
+import config from './config'
 
 function requiresAuth (handlerName) {
   // app.me.token does not exist yet at instantiatin
@@ -65,7 +66,7 @@ export default Router.extend({
     window.location = 'https://github.com/login/oauth/authorize?' + qs.stringify({
       scope: 'user,repo',
       redirect_uri: window.location.origin + '/auth/callback',
-      client_id: 'f8dd69187841cdd22a26'
+      client_id: config.clientId
     });
   },
 
@@ -75,7 +76,7 @@ export default Router.extend({
     xhr({
       // we're inputting our client secret in heroku
       // allowing us to hide our client_secret
-      url: 'https://labelr-localhost.herokuapp.com/authenticate/' + query.code,
+      url: config.authUrl + '/' + query.code,
       json: true
     }, (err, req, body) => {
       app.me.token = body.token
