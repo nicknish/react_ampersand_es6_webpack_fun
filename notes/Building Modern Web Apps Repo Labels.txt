@@ -174,3 +174,53 @@ export default React.createClass({
     return <LabelItem key={label.name} label={label} />
 })}
 ```
+
+## Adding an Editing State
+
+Let's edit our `label-item.js` to include our basic states.
+
+```
+/* label-item.js */
+// editing
+if (label.editing) {
+  content = (
+    <form className='label'>
+      <span className='label-color avatar avatar-small avatar-rounded'>&nbsp;</span>
+      <input name='name'/>
+      <input name='color'/>
+      <button type='submit' className='button button-small'>Save</button>
+      <button type='button' className='button button-small button-unstyled'>cancel</button>
+    </form>
+  )
+} else {
+  content = (
+    <div className='label'>
+      <span className='label-color' style={{backgroundColor: cssColor}}>&nbsp;{label.name}</span>
+      <span></span>
+      <span className='octicon octicon-pencil'></span>
+      <span className='octicon octicon-x'></span>
+    </div>
+  )
+}
+
+return (
+  <div>{content}</div>
+)
+```
+
+Now we can create a state in the model to determine if it's in editing:
+
+```
+/* model/label.js */
+session: {
+	editing: {
+	  type: 'boolean',
+	  default: false
+	}
+}
+```
+
+Why use session? Session and props are provided by ampersand model, and session is stored local by the browser, props is sent to the server.
+
+## Label Colors
+
