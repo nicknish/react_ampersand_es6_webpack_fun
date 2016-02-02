@@ -33,18 +33,27 @@ export default React.createClass({
     })
   },
 
+  onColorChange (event) {
+    // React will rerender state
+    this.setState({
+      // event.target.value grabs input value
+      color: event.target.value.slice(1)
+    })
+  },
+
   render () {
     const {label} = this.props
-    const cssColor = '#' + label.color
+    const {color} = this.state
+    const cssColor = '#' + color
     let content
 
     // editing
     if (label.editing) {
       content = (
         <form className='label'>
-          <span className='label-color avatar avatar-small avatar-rounded'>&nbsp;</span>
+          <span style={{backgroundColor: cssColor}} className='label-color avatar avatar-small avatar-rounded'>&nbsp;</span>
           <input name='name' onChange={this.onNameChange} value={this.state.name}/>
-          <input name='color' value={this.state.color}/>
+          <input name='color' onChange={this.onColorChange} value={cssColor}/>
           <button type='submit' className='button button-small'>Save</button>
           <button onClick={this.onCancelClick} type='button' className='button button-small button-unstyled'>cancel</button>
         </form>
