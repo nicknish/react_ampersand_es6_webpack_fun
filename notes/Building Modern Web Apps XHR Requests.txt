@@ -55,3 +55,59 @@ On forms, we need to preventDefault because if we have a form without an action,
 
 ## Creating New Labels
 
+```
+/* models/label.js */
+session: {
+	editing: {
+	  type: 'boolean',
+	  default: false
+	},
+	saved: {
+	  type: 'boolean',
+	  default: true
+	}
+},
+
+isNew () {
+	return !this.saved
+},
+...
+```
+
+```
+/* label-item.js */
+onSubmit (event) {
+	event.preventDefault()
+	const {label} = this.props
+	label.update(this.state)
+	
+	if (label.saved) {
+	  label.update(this.state)
+	} else {
+	  // pass attributs
+	  label.save(this.state)
+	}
+	
+	label.editing = false
+},
+```
+
+```
+/* repo-detail.js */
+onAddClick (event) {
+	event.preventDefault()
+	this.props.repo.labels.add({
+	  name: '',
+	  color: '',
+	  editing: true,
+	  saved: false
+	},
+	  // Adds it to the top of the collection
+	  {at: 0})
+},
+...
+<button onClick={this.onAddClick}>Add label</button>
+```
+
+## Canceling New Labels
+

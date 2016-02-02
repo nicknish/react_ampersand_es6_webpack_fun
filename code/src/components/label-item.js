@@ -47,6 +47,14 @@ export default React.createClass({
     event.preventDefault()
     const {label} = this.props
     label.update(this.state)
+
+    if (label.saved) {
+      label.update(this.state)
+    } else {
+      // pass attributs
+      label.save(this.state)
+    }
+
     label.editing = false
   },
 

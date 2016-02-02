@@ -15,7 +15,15 @@ export default Model.extend(githubMixin, {
     editing: {
       type: 'boolean',
       default: false
+    },
+    saved: {
+      type: 'boolean',
+      default: true
     }
+  },
+
+  isNew () {
+    return !this.saved
   },
 
   update (attributes) {
