@@ -12,6 +12,7 @@ export default React.createClass({
   onCancelClick (event) {
     event.preventDefault()
     this.props.label.editing = false
+    this.setState(this.getInitialState())
   },
 
   onDeleteClick (event) {
@@ -37,6 +38,7 @@ export default React.createClass({
     // React will rerender state
     this.setState({
       // event.target.value grabs input value
+      // slice(1) will not allow user to remove #
       color: event.target.value.slice(1)
     })
   },

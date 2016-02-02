@@ -299,3 +299,31 @@ onNameChange (event) {
 ```
 
 ## Editing Label Colors
+
+```
+/* label-item.js */
+onColorChange (event) {
+	// React will rerender state
+	this.setState({
+	  // event.target.value grabs input value
+	  color: event.target.value.slice(1)
+	})
+},
+...
+const {color} = this.state
+const cssColor = '#' + color
+...
+<input name='color' onChange={this.onColorChange} value={cssColor}/>
+```
+
+**Have Cancel Reset to Model Properties**
+
+```
+onCancelClick (event) {
+	event.preventDefault()
+	this.props.label.editing = false
+	this.setState(this.getInitialState())
+},
+```
+
+## 
