@@ -56,8 +56,12 @@ export default React.createClass({
     if (label.saved) {
       label.update(this.state)
     } else {
-      // pass attributs
-      label.save(this.state)
+      // pass attributes
+      label.save(this.state, {
+        success: () => {
+          label.saved = true
+        }
+      })
     }
 
     label.editing = false
