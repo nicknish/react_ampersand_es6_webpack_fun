@@ -224,3 +224,27 @@ Why use session? Session and props are provided by ampersand model, and session 
 
 ## Label Colors
 
+```
+/* label-item.js */
+const cssColor = label.color
+...
+```
+
+## Exercise: Changing Label State
+
+```
+/* label-item.js */
+...
+mixins: [ampersandMixin],
+onEditClick () {
+	this.props.label.editing = true
+},
+onCancelClick () {
+	this.props.label.editing = false
+},
+...
+<button onClick={this.onCancelClick}>cancel</button>
+...
+<span onClick={this.onEditClick}></span>
+```
+
